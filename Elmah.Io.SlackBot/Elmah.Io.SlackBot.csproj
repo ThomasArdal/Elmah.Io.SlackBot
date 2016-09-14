@@ -134,6 +134,7 @@
     <Compile Include="ElmahIoResponse.cs" />
     <Compile Include="Modules\SlashCommandModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SlackResponse.cs" />
     <Compile Include="SlashCommand.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Users\ElmahLog.cs" />

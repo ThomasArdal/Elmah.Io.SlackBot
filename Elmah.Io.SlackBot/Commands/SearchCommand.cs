@@ -28,7 +28,18 @@ namespace Elmah.Io.SlackBot.Commands
             var request = new RestRequest($"messages?logid={log.LogId}&pagesize=20&query={query}", Method.GET);
             var result = Client.Execute<List<Message>>(request);
             var content = JsonConvert.DeserializeObject<ElmahIoResponse>(result.Content);
-            return content.Messages.Select(q => $"{q.DateTime} {q.Title} {q.Application} {q.Source}"); // <-- format response according to Slack's docs
+            var response = new SlackResponse
+            {
+                Text =
+                    string.Join("\n",
+                        content.Messages.Select(q => $"{q.DateTime} {q.Title} {q.Application} {q.Source}\n"))
+            };
+            var attachment = new SlackAttachment();
+            attachment.Actions.Add(new ButtonAction { Text = "Send to channel", Name = "send_to_channel", Value = string.Join(",", args) });
+            attachment.Actions.Add(new ButtonAction { Text = "Ignore matching errors", Name = "ignore", Value = string.Join(",", args) });
+            response.Attachments.Add(attachment);
+            return response;
+            
         }
     }
 }

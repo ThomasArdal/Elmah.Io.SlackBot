@@ -10,6 +10,7 @@ using RestSharp;
 
 namespace Elmah.Io.SlackBot.Commands
 {
+    [SlashCommand("search")]
     public class SearchCommand : SlashCommandBase
     {
         private readonly IUserRepository userRepository;

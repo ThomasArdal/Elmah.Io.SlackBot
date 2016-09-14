@@ -22,6 +22,7 @@ namespace Elmah.Io.SlackBot
             {
                 builder.Register<IRestClient>(h => new RestClient("https://elmah.io/api/v2")).SingleInstance();
                 builder.Register<IUserRepository>(h => new UserRepositoryMock()).SingleInstance();
+                builder.Register<IAuthRepository>(h => new AuthRepositoryMock()).SingleInstance();
                 builder.RegisterModule<CommandModule>();
             });
         }

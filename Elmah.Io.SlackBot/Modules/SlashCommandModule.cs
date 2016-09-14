@@ -20,7 +20,14 @@ namespace Elmah.Io.SlackBot.Modules
         {
             Post["/handle"] = p =>
             {                
+
                 var command = this.Bind<SlashCommand>();
+
+                if (command.text == "debug")
+                {
+                    throw new Exception(command.token);
+                }
+
                 if (string.IsNullOrEmpty(command.text))
                 {
                     return new SlackResponse {Text = "No command"};

@@ -8,11 +8,12 @@ using RestSharp;
 
 namespace Elmah.Io.SlackBot.Commands
 {
-    public class RegisterCommand : SlashCommandBase
+    [SlashCommand("config")]
+    public class ConfigCommand : SlashCommandBase
     {
         private readonly IUserRepository userRepository;
 
-        public RegisterCommand(IRestClient client, IUserRepository userRepository) : base(client)
+        public ConfigCommand(IRestClient client, IUserRepository userRepository) : base(client)
         {
             this.userRepository = userRepository;
         }

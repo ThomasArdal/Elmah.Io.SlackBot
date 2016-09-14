@@ -60,6 +60,10 @@
       <HintPath>..\packages\elmah.io.client.2.0.29\lib\net40\Elmah.Io.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FluentScheduler, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b76503528a14ebd1, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentScheduler.5.0.0\lib\net40\FluentScheduler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
@@ -101,6 +105,10 @@
       <HintPath>..\packages\RestSharp.105.2.3\lib\net46\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SlackAPI, Version=1.0.4.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SlackAPI.1.0.5.1\lib\net45\SlackAPI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -131,9 +139,16 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Alerting\AlertPolicy.cs" />
+    <Compile Include="Alerting\AlertRunner.cs" />
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Bot\SlackAlertBot.cs" />
+    <Compile Include="Commands\AlertCommand.cs" />
+    <Compile Include="Commands\AuthCommand.cs" />
     <Compile Include="Commands\CommandModule.cs" />
-    <Compile Include="Commands\RegisterCommand.cs" />
+    <Compile Include="Commands\ConfigCommand.cs" />
+    <Compile Include="Commands\HelpCommand.cs" />
+    <Compile Include="Commands\SlashCommandAttribute.cs" />
     <Compile Include="Commands\SlashCommandBase.cs" />
     <Compile Include="Commands\SearchCommand.cs" />
     <Compile Include="ElmahIoResponse.cs" />
@@ -143,7 +158,9 @@
     <Compile Include="SlashCommand.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Users\ElmahLog.cs" />
+    <Compile Include="Users\IAuthRepository.cs" />
     <Compile Include="Users\IUserRepository.cs" />
+    <Compile Include="Users\AuthRepositoryMock.cs" />
     <Compile Include="Users\UserRepositoryMock.cs" />
   </ItemGroup>
   <PropertyGroup>

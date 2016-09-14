@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 using Autofac;
 using Elmah.Io.SlackBot.Users;
 using RestSharp;
+using Module = Autofac.Module;
 
 namespace Elmah.Io.SlackBot.Commands
 {
@@ -12,8 +14,14 @@ namespace Elmah.Io.SlackBot.Commands
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register<SlashCommandBase>(h => new SearchCommand(h.Resolve<IRestClient>(), h.Resolve<IUserRepository>())).Keyed<SlashCommandBase>("search");
-            builder.Register<SlashCommandBase>(h => new RegisterCommand(h.Resolve<IRestClient>(), h.Resolve<IUserRepository>())).Keyed<SlashCommandBase>("register");
+            ThisAssembly.GetTypes().ToList().ForEach(p =>
+            {
+                var attribute = p.GetCustomAttribute<SlashCommandAttribute>();
+                if (attribute != null)
+                {
+                    builder.RegisterType(p).Keyed<SlashCommandBase>(attribute.Name);
+                }
+            });
         }
     }
 }

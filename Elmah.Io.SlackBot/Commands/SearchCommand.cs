@@ -21,10 +21,18 @@ namespace Elmah.Io.SlackBot.Commands
 
         public override object Run(string[] args)
         {
+            if (args.Length < 3)
+            {
+                return new SlackResponse {Text = "Usage: `/elmah search [log_alias] [query]`"};
+            }
             var logAlias = args[0];
             var query = args[1];
             var teamId = args[2];
             var log = userRepository.GetLog(teamId, logAlias);
+            if (log == null)
+            {
+                return new SlackResponse {Text = "Log not found. Has it been registered? `/elmah register [log_id] [log_alias]`"};
+            }
             var request = new RestRequest($"messages?logid={log.LogId}&pagesize=20&query={query}", Method.GET);
             var result = Client.Execute<List<Message>>(request);
             var content = JsonConvert.DeserializeObject<ElmahIoResponse>(result.Content);

@@ -19,11 +19,18 @@ namespace Elmah.Io.SlackBot.Modules
         public SlashCommandModule(ILifetimeScope scope)
         {
             Post["/handle"] = p =>
-            {
+            {                
                 var command = this.Bind<SlashCommand>();
+                if (string.IsNullOrEmpty(command.text))
+                {
+                    return new SlackResponse {Text = "No command"};
+                }
                 var args = command.text.Split(' ').ToList();
-                args.Add(command.team_id); 
-                return scope.ResolveKeyed<SlashCommandBase>(args[0]).Run(args.Skip(1).ToArray());
+                args.Add(command.team_id);
+                if (!scope.IsRegisteredWithKey<SlashCommandBase>(args[0]))
+                    return new SlackResponse {Text = $"Unkown command `{args[0]}`"};
+                var cmd = scope.ResolveKeyed<SlashCommandBase>(args[0]);                
+                return cmd.Run(args.Skip(1).ToArray());
             };
         }
     }

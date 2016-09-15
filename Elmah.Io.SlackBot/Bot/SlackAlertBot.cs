@@ -13,7 +13,8 @@ namespace Elmah.Io.SlackBot.Bot
 
         public static void PostMessage(string authToken, string text, string channelName)
         {
-            SlackSocketClient client = new SlackSocketClient(authToken);
+            var client = new SlackSocketClient(authToken);
+            
             client.Connect((connected) =>
             {
                 //This is called once the client has emitted the RTM start command

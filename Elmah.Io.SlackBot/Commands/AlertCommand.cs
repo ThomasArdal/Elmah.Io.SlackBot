@@ -48,7 +48,7 @@ namespace Elmah.Io.SlackBot.Commands
                 if (elmahResponse.Total > policy.Count)
                 {
                     var authToken = authRepository.GetAuthToken(teamId);
-                    SlackAlertBot.PostMessage(authToken, $"Alert for {policy.Query} > {policy.Count} in {policy.Minutes} minutes!", policy.Channel);
+                    SlackAlertBot.PostMessage(authToken, $"Alert for {policy.Query} > {policy.Count} in {policy.Minutes} minutes!\n<https://elmah.io/errorlog/search?logId={policy.LogId}&freeText={policy.Query}&hidden=false&groupBy=&sort=time&order=desc#searchTab|Go to log>", policy.Channel);
                 }
             }, s => s.ToRunNow().AndEvery(30).Seconds());
 

@@ -50,7 +50,7 @@ namespace Elmah.Io.SlackBot.Commands
                         policy.AlertStarted = DateTime.UtcNow;
                         var authToken = authRepository.GetAuthToken(teamId);
                         SlackAlertBot.PostMessage(authToken,
-                            $"Alert in `{log.Alias}` for query `{policy.Query}` is greater {policy.Count} logs entries in {policy.Minutes} minutes!\n<https://elmah.io/errorlog/search?logId={policy.LogId}&freeText={policy.Query}&hidden=false&groupBy=&sort=time&order=desc#searchTab|Go to log>",
+                            $"Alert in `{log.Alias}` for query `{policy.Query}` has more than {policy.Count} logs entries in {policy.Minutes} minutes!\n<https://elmah.io/errorlog/search?logId={policy.LogId}&freeText={policy.Query}&hidden=false&groupBy=&sort=time&order=desc#searchTab|Go to log>",
                             policy.Channel);
 
                         //Realert after 30 min
@@ -62,7 +62,7 @@ namespace Elmah.Io.SlackBot.Commands
 
                     var authToken = authRepository.GetAuthToken(teamId);
                     SlackAlertBot.PostMessage(authToken,
-                        $"Alert in `{log.Alias}` for query `{policy.Query}` closed after {(int)Math.Ceiling((DateTime.UtcNow - policy.AlertStarted.Value).TotalMinutes)}",
+                        $"Alert in `{log.Alias}` for query `{policy.Query}` closed after {(int)Math.Ceiling((DateTime.UtcNow - policy.AlertStarted.Value).TotalMinutes)} minutes.",
                         policy.Channel);
                     policy.AlertStarted = null;
                 }

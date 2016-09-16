@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Elmah.Io.SlackBot.Alerting;
 using Elmah.Io.SlackBot.Bot;
+using Elmah.Io.SlackBot.Extensions;
 using Elmah.Io.SlackBot.Users;
 using FluentScheduler;
 using Newtonsoft.Json;
@@ -26,8 +27,6 @@ namespace Elmah.Io.SlackBot.Commands
 
         public override object Run(string[] args)
         {
-            // [alias] when [query] > [threshold] in [minutes] minutes to [channel]
-
             var teamId = args.LastOrDefault();
             var log = userRepository.GetLog(teamId, args[0]);
 
@@ -43,18 +42,33 @@ namespace Elmah.Io.SlackBot.Commands
             JobManager.AddJob(() =>
             {
                 var request = new RestRequest($"/messages?logid={policy.LogId}&pagesize=0&query={policy.Query}&from={DateTime.UtcNow.AddMinutes(-policy.Minutes)}&to={DateTime.UtcNow}");
-                var response = Client.Execute<ElmahIoResponse>(request);
-                var elmahResponse = JsonConvert.DeserializeObject<ElmahIoResponse>(response.Content);
-                if (elmahResponse.Total > policy.Count)
+                var response = Client.DeserializeTo<ElmahIoResponse>(request);
+                if (response.Total > policy.Count)
                 {
+                    if (policy.AlertStarted == null)
+                    {
+                        policy.AlertStarted = DateTime.UtcNow;
+                        var authToken = authRepository.GetAuthToken(teamId);
+                        SlackAlertBot.PostMessage(authToken,
+                            $"Alert in `{log.Alias}` for query `{policy.Query}` is greater {policy.Count} logs entries in {policy.Minutes} minutes!\n<https://elmah.io/errorlog/search?logId={policy.LogId}&freeText={policy.Query}&hidden=false&groupBy=&sort=time&order=desc#searchTab|Go to log>",
+                            policy.Channel);
+
+                        //Realert after 30 min
+                        JobManager.AddJob(() => policy.AlertStarted = null, s => s.ToRunOnceIn(30).Minutes());
+                    }
+                }
+                else if (policy.AlertStarted != null)
+                {
+
                     var authToken = authRepository.GetAuthToken(teamId);
-                    SlackAlertBot.PostMessage(authToken, $"Alert for {policy.Query} > {policy.Count} in {policy.Minutes} minutes!\n<https://elmah.io/errorlog/search?logId={policy.LogId}&freeText={policy.Query}&hidden=false&groupBy=&sort=time&order=desc#searchTab|Go to log>", policy.Channel);
+                    SlackAlertBot.PostMessage(authToken,
+                        $"Alert in `{log.Alias}` for query `{policy.Query}` closed after {(int)Math.Ceiling((DateTime.UtcNow - policy.AlertStarted.Value).TotalMinutes)}",
+                        policy.Channel);
+                    policy.AlertStarted = null;
                 }
             }, s => s.ToRunNow().AndEvery(30).Seconds());
 
             return new SlackResponse { Text = "Alert created" };
-
-
         }
     }
 }
